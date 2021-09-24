@@ -2,6 +2,7 @@ package glenv
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -39,6 +40,14 @@ type groupJson struct {
 func GetAllProjectVariables(token string, host string, project string) (map[string]string, error) {
 	result := make(map[string]string)
 	projectURL := createProjectURL(host, project)
+
+	if host == "" {
+		return nil, errors.New("missing host")
+	}
+
+	if project == "" {
+		return nil, errors.New("missing project")
+	}
 
 	// get all groups and vars for each project's group
 	groups, err := getGroups(token, projectURL)
@@ -115,6 +124,10 @@ func getGroups(token string, projectURL string) ([]groupJson, error) {
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("Error in %s (HTTP %d)", projectURL, resp.StatusCode)
 	}
 
 	// parse response

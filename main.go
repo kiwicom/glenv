@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -15,11 +16,13 @@ func main() {
 		switch os.Args[1] {
 		case "init":
 			err = initialize()
+		case "export":
+			err = export()
 		default:
 			printHelp()
 		}
 	} else {
-		err = export()
+		printHelp()
 	}
 
 	exit(err)
@@ -36,7 +39,7 @@ func main() {
 func export() error {
 	token := os.Getenv("GITLAB_TOKEN")
 	if token == "" {
-
+		return errors.New("Missing GITLAB_TOKEN. Please ensure GITLAB_TOKEN env. variable is present")
 	}
 
 	host, project, err := glenv.GetHostAndProject(".")
@@ -60,7 +63,7 @@ func export() error {
 // this function is executed when you call `glenv init`
 // and create `.envrc` file for you in current dir.
 func initialize() error {
-	body := []byte("eval \"$(glenv)\"\n")
+	body := []byte("eval \"$(glenv export)\"\n")
 	err := ioutil.WriteFile(".envrc", body, 0644)
 	if err != nil {
 		return err
@@ -77,6 +80,7 @@ func printHelp() {
 	fmt.Println("")
 	fmt.Println("   subcommands:")
 	fmt.Println("       init - create '.envrc' file in current directory")
+	fmt.Println("       export - export env. variables from GitLab for current repository")
 	fmt.Println("")
 }
 

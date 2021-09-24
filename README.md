@@ -1,10 +1,9 @@
 # GlEnv
 
 Jump into your favourite repository folder and GitLab env. variables are 
-automatically loaded into your shell. 
-
-This tool in combination with [direnv](https://direnv.net/) will export you 
-project's env. variables from GitLab.
+automatically loaded into your shell. This tool in combination with 
+[direnv](https://direnv.net/) will export you project's env. variables 
+from GitLab.
 
 ## How it works
 
@@ -38,29 +37,14 @@ The `direnv` automatically unload all GitLab env. variables.
 
 ## How to install
 
-The `glenv` make sense in comboe with `direnv`. Please install also `direnv`:
+Currently `glenv` is not available in Homebrew. 
 
-```
-$ brew install direnv
-```
+But you can download archive with binary here in [GitHub releases](https://github.com/kiwicom/glenv/releases/).
+Installation is simple anyway. Download the desired archive for your system, 
+unpack it and place it in some folder, which is in your PATH.
 
-The direnv need some post-installation setup. For ZShell users, add the 
-following line at the end of the `~/.zshrc` file and restart the shell:
-
-```
-$ eval "$(direnv hook zsh)"
-```
-
-If you're using different shell, follow the instructions in [direnv documentation](https://direnv.net/docs/hook.html).
-
-The `glenv` is available in Homebrew as well.:
-
-```
-$ brew install kiwi/tools/glen
-```
-
-Make sure you have `GITLAB_TOKEN` env. variable present in your environment with
-your [personal access token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.htm).
+No need to configure. Only `GITLAB_TOKEN` variable need to be present in your 
+environment.
 
 ## How to enable it in repository
 

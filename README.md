@@ -1,3 +1,5 @@
+[![version](https://shields.io/github/v/release/kiwicom/glenv)
+
 # glenv
 
 Jump into your favourite repository folder and GitLab env. variables are 

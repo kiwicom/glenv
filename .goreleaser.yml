@@ -40,6 +40,7 @@ brews:
     tap:
       owner: kiwicom
       name: homebrew-tap
+      token: "{{ .Env.GH_PAT }}"
     folder: Formula
     homepage: https://github.com/kiwicom/glenv
     description: jump into repository folder and GitLab env. variables are automatically loaded into your shell

@@ -1,4 +1,4 @@
-# GlEnv
+# glenv
 
 Jump into your favourite repository folder and GitLab env. variables are 
 automatically loaded into your shell. This tool in combination with 
@@ -37,9 +37,13 @@ The `direnv` automatically unload all GitLab env. variables.
 
 ## How to install
 
-Currently `glenv` is not available in Homebrew. 
+You can use Homebrew
 
-But you can download archive with binary here in [GitHub releases](https://github.com/kiwicom/glenv/releases/).
+```
+brew install kiwicom/tap/glenv
+```
+
+Or you can download archive with binary here in [GitHub releases](https://github.com/kiwicom/glenv/releases/).
 Installation is simple anyway. Download the desired archive for your system, 
 unpack it and place it in some folder, which is in your PATH.
 

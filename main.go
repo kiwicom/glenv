@@ -77,7 +77,7 @@ func initialize() error {
 // heavy CLI framework (e.g. cobra) right now. Maybe later
 func printHelp() {
 	fmt.Println("glenv - export the env. variables from GitLab for current repository")
-	fmt.Println("")
+	fmt.Println(""
 	fmt.Println("   subcommands:")
 	fmt.Println("       init - create '.envrc' file in current directory")
 	fmt.Println("       export - export env. variables from GitLab for current repository")

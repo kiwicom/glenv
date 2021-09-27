@@ -37,7 +37,7 @@ release:
 
 brews:
   - name: glenv
-    github:
+    tap:
       owner: kiwicom
       name: homebrew-tap
     folder: Formula

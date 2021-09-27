@@ -1,4 +1,4 @@
-[![version](https://shields.io/github/v/release/kiwicom/glenv)
+[![version](https://shields.io/github/v/release/kiwicom/glenv)]
 
 # glenv
 

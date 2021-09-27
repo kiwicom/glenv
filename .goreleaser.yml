@@ -35,3 +35,7 @@ release:
     name: glenv
   name_template: "{{.ProjectName}}-v{{.Version}}"
 
+brews:
+  tap:
+    owner: kiwicom
+    name: homebrew-tap

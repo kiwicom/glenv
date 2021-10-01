@@ -9,6 +9,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/kiwicom/glenv/internal/glenv/log"
 )
 
 type projectJson struct {
@@ -37,6 +39,9 @@ type groupJson struct {
 // If the env. variable is present in some group and also it's redefined
 // with different value in project, the project's value will be used.
 //
+// Bear on mind:
+// Currently there is no support for pagination and function is fetching
+// 100 variables per page what is maximum limit in GitLab.
 func GetAllProjectVariables(token string, host string, project string) (map[string]string, error) {
 	result := make(map[string]string)
 	projectURL := createProjectURL(host, project)
@@ -57,7 +62,7 @@ func GetAllProjectVariables(token string, host string, project string) (map[stri
 
 	for _, grp := range groups {
 		groupURL := createGroupURL(host, grp.FullPath)
-		groupVars, err := getVariables(token, groupURL+"/variables")
+		groupVars, err := getVariables(token, groupURL+"/variables?per_page=100")
 		if err != nil {
 			// skip the group we cannot read variables for
 			errMsg := fmt.Sprintf("%v\n", err)
@@ -70,7 +75,7 @@ func GetAllProjectVariables(token string, host string, project string) (map[stri
 	// get project vars. Why we get project vars after group vars
 	// is not accidentally. The project vars have higher priority
 	// and will override the group vars.
-	projectVars, err := getVariables(token, projectURL+"/variables")
+	projectVars, err := getVariables(token, projectURL+"/variables?per_page=100")
 	if err != nil {
 		return result, err
 	}
@@ -113,7 +118,7 @@ func createProjectURL(host string, project string) string {
 func getGroups(token string, projectURL string) ([]groupJson, error) {
 
 	// prepare request
-	req, err := http.NewRequest("GET", projectURL+"/groups", nil)
+	req, err := http.NewRequest("GET", projectURL+"/groups?per_page=100", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -126,12 +131,15 @@ func getGroups(token string, projectURL string) ([]groupJson, error) {
 		return nil, err
 	}
 
+	// response is processed depends on status code(200 etc) and parsed
+	respBody, _ := ioutil.ReadAll(resp.Body)
+	log.Debug("Response %s: %s", resp.Status, respBody)
+
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("Error in %s (HTTP %d)", projectURL, resp.StatusCode)
 	}
 
-	// parse response
-	respBody, _ := ioutil.ReadAll(resp.Body)
+	// JSON parsing
 	var groups []groupJson = make([]groupJson, 20)
 	err = json.Unmarshal(respBody, &groups)
 	if err != nil {
@@ -154,17 +162,20 @@ func getProjectInfo(token string, projectURL string) (projectJson, error) {
 	req.Header.Add("Content-Type", "application/json")
 
 	// send it
+	log.Debug("curl %s", projectURL)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return projectInfo, err
 	}
 
+	// response is processed depends on status code(200 etc) and parsed
+	respBody, _ := ioutil.ReadAll(resp.Body)
+	log.Debug("Response %s: %s", resp.Status, respBody)
+
 	if resp.StatusCode != 200 {
 		return projectJson{}, fmt.Errorf("Error in %s (HTTP %d)", projectURL, resp.StatusCode)
 	}
 
-	// parse response
-	respBody, _ := ioutil.ReadAll(resp.Body)
 	err = json.Unmarshal(respBody, &projectInfo)
 	if err != nil {
 		return projectInfo, err
@@ -185,10 +196,15 @@ func getVariables(token string, variablesURL string) ([]variableJson, error) {
 	req.Header.Add("Content-Type", "application/json")
 
 	// send it
+	log.Debug("curl %s", variablesURL)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
+
+	// processing response
+	respBody, _ := ioutil.ReadAll(resp.Body)
+	log.Debug("response %s: %s", resp.Status, respBody)
 
 	if resp.StatusCode == 403 {
 		return nil, fmt.Errorf("You don't have access to %s (HTTP %d)", variablesURL, resp.StatusCode)
@@ -196,8 +212,6 @@ func getVariables(token string, variablesURL string) ([]variableJson, error) {
 		return nil, fmt.Errorf("Error in %s (HTTP %d)", variablesURL, resp.StatusCode)
 	}
 
-	// parse response
-	respBody, _ := ioutil.ReadAll(resp.Body)
 	var variables []variableJson = make([]variableJson, 20)
 	err = json.Unmarshal(respBody, &variables)
 	if err != nil {

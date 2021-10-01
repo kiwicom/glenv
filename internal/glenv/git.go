@@ -5,6 +5,7 @@ import (
 	"regexp"
 
 	"github.com/go-git/go-git/v5"
+	"github.com/kiwicom/glenv/internal/glenv/log"
 )
 
 // This function open the Git repository on given path and returns you the
@@ -25,10 +26,12 @@ func GetHostAndProject(path string) (string, string, error) {
 		return "", "", fmt.Errorf("cannot parse the URL %s", remoteURL)
 	}
 
+	log.Debug("The repository's origin host:%s, project: %s", host, project)
 	return host, project, nil
 }
 
 func getRemoteURL(path string) (string, error) {
+	log.Debug("get 'origin' URL for repo: %s", path)
 	repo, err := git.PlainOpen(path)
 	if err != nil {
 		return "", err
@@ -47,6 +50,8 @@ func getRemoteURL(path string) (string, error) {
 // parse git@{host}:{project}.git and returns you
 // host and project.
 func parseRemoteURL(URL string) (string, string) {
+	log.Debug("Parsing origin URL:%s", URL)
+
 	re := regexp.MustCompile(".*@(.*):(.*).git")
 	res := re.FindStringSubmatch(URL)
 	if len(res) < 3 {

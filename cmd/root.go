@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"github.com/kiwicom/glenv/internal/glenv"
 	"github.com/spf13/cobra"
 )
 
@@ -58,5 +59,9 @@ func init() {
 }
 
 func preRun(cmd *cobra.Command, args []string) error {
+	isDebug, _ := cmd.Flags().GetBool("debug")
+	if isDebug {
+		glenv.EnableDebug()
+	}
 	return nil
 }

@@ -23,7 +23,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// initCmd represents the init command
+// initCmd represents the 'glenv init' command
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize .envrc file",

@@ -1,95 +1,22 @@
+/*
+Copyright © 2021 NAME HERE <EMAIL ADDRESS>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package main
 
-import (
-	"errors"
-	"fmt"
-	"io/ioutil"
-	"os"
-
-	"github.com/kiwicom/glenv/internal/glenv"
-)
+import "github.com/kiwicom/glenv/cmd"
 
 func main() {
-	var err error
-
-	if len(os.Args) > 1 {
-		switch os.Args[1] {
-		case "init":
-			err = initialize()
-		case "export":
-			err = export()
-		default:
-			printHelp()
-		}
-	} else {
-		printHelp()
-	}
-
-	exit(err)
-}
-
-// main functionality of glenv is here
-//
-// retrieve all GitLab variables for project and print the vars
-// as exports into console std output. The output can be used as entry into
-// bash eval:
-//
-//     eval "$(glenv)"
-//
-func export() error {
-	token := os.Getenv("GITLAB_TOKEN")
-	if token == "" {
-		return errors.New("Missing GITLAB_TOKEN. Please ensure GITLAB_TOKEN env. variable is present")
-	}
-
-	host, project, err := glenv.GetHostAndProject(".")
-	if err != nil {
-		return err
-	}
-
-	vars, err := glenv.GetAllProjectVariables(token, host, project)
-	if err != nil {
-		return err
-	}
-
-	// print exports to output
-	for key, val := range vars {
-		fmt.Printf("export %s='%s'\n", key, val)
-	}
-
-	return nil
-}
-
-// this function is executed when you call `glenv init`
-// and create `.envrc` file for you in current dir.
-func initialize() error {
-	body := []byte("eval \"$(glenv export)\"\n")
-	err := ioutil.WriteFile(".envrc", body, 0644)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// print some help to std. output
-//
-// Because the tool is very simple, I don't want to mess it with some
-// heavy CLI framework (e.g. cobra) right now. Maybe later
-func printHelp() {
-	fmt.Println("glenv - export the env. variables from GitLab for current repository")
-	fmt.Println(""
-	fmt.Println("   subcommands:")
-	fmt.Println("       init - create '.envrc' file in current directory")
-	fmt.Println("       export - export env. variables from GitLab for current repository")
-	fmt.Println("")
-}
-
-func exit(err error) {
-	if err != nil {
-		errMsg := fmt.Sprintf("error: %v\n", err)
-		os.Stderr.WriteString(errMsg)
-		os.Exit(1)
-	} else {
-		os.Exit(0)
-	}
+	cmd.Execute()
 }

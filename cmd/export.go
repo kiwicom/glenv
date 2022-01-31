@@ -9,21 +9,28 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// exportCmd represents the export command
-var exportCmd = &cobra.Command{
-	Use:   "export",
-	Short: "Export variables from GitLab",
-	Long:  "Export variables from GitLab. This command is called e.g. by direnv",
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := export(); err != nil {
-			errMsg := fmt.Sprintf("error: %v\n", err)
-			os.Stderr.WriteString(errMsg)
-		}
-	},
+func newExportCmd() *cobra.Command {
+
+	var cmd = &cobra.Command{
+		Use:   "export",
+		Short: "Export variables from GitLab",
+		Long:  "Export variables from GitLab. This command is called e.g. by direnv",
+		Run: func(cmd *cobra.Command, args []string) {
+			ignoreList, _ := cmd.Flags().GetStringArray("ignore")
+			if err := export(ignoreList); err != nil {
+				errMsg := fmt.Sprintf("error: %v\n", err)
+				os.Stderr.WriteString(errMsg)
+			}
+		},
+	}
+
+	cmd.Flags().StringArrayP("ignore", "i", []string{}, "sometimes you want to ignore some variable")
+
+	return cmd
 }
 
 func init() {
-	rootCmd.AddCommand(exportCmd)
+	rootCmd.AddCommand(newExportCmd())
 }
 
 // main functionality of glenv is here
@@ -34,7 +41,11 @@ func init() {
 //
 //     eval "$(glenv export)"
 //
-func export() error {
+// example with ignore
+//
+//     eval "$(glenv export -i SOME_VAR)
+//
+func export(ignoreList []string) error {
 	token := os.Getenv("GITLAB_TOKEN")
 	if token == "" {
 		return errors.New("Missing GITLAB_TOKEN. Please ensure GITLAB_TOKEN env. variable is present")
@@ -51,9 +62,21 @@ func export() error {
 	}
 
 	// print exports to output
+	// if env. variable is in ignore list, it's ignored
 	for key, val := range vars {
-		fmt.Printf("export %s='%s'\n", key, val)
+		if isNotIgnored(key, ignoreList) {
+			fmt.Printf("export %s='%s'\n", key, val)
+		}
 	}
 
 	return nil
+}
+
+func isNotIgnored(value string, ignoreList []string) bool {
+	for _, ignored := range ignoreList {
+		if value == ignored {
+			return false
+		}
+	}
+	return true
 }

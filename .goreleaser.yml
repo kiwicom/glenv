@@ -32,12 +32,3 @@ changelog:
 
 release:
   name_template: "{{.ProjectName}}-v{{.Version}}"
-
-brews:
-  - name: glenv
-    tap:
-      owner: kiwicom
-      name: homebrew-tap
-    folder: Formula
-    homepage: https://github.com/kiwicom/glenv
-    description: jump into repository folder and GitLab env. variables are automatically loaded into your shell

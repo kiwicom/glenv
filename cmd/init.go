@@ -23,21 +23,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// initCmd represents the 'glenv init' command
-var initCmd = &cobra.Command{
-	Use:   "init",
-	Short: "Initialize .envrc file",
-	Long:  "Initialize .envrc with glenv export. The file will be created in current directory.",
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := initialize(); err != nil {
-			errMsg := fmt.Sprintf("error: %v\n", err)
-			os.Stderr.WriteString(errMsg)
-		}
-	},
-}
-
-func init() {
-	rootCmd.AddCommand(initCmd)
+// InitCmd represents the 'glenv init' command
+func InitCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "init",
+		Short: "Initialize .envrc file",
+		Long:  "Initialize .envrc with glenv export. The file will be created in current directory.",
+		Run: func(cmd *cobra.Command, args []string) {
+			if err := initialize(); err != nil {
+				errMsg := fmt.Sprintf("error: %v\n", err)
+				os.Stderr.WriteString(errMsg)
+			}
+		},
+	}
 }
 
 // this function is executed when you call `glenv init`

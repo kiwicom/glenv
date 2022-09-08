@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newExportCmd() *cobra.Command {
+func ExportCmd() *cobra.Command {
 
 	var cmd = &cobra.Command{
 		Use:   "export",
@@ -25,12 +25,7 @@ func newExportCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringArrayP("ignore", "i", []string{}, "sometimes you want to ignore some variable")
-
 	return cmd
-}
-
-func init() {
-	rootCmd.AddCommand(newExportCmd())
 }
 
 // main functionality of glenv is here

@@ -2,10 +2,9 @@ package glenv
 
 import (
 	"fmt"
-	"regexp"
-
 	"github.com/go-git/go-git/v5"
 	"github.com/kiwicom/glenv/internal/glenv/log"
+	"strings"
 )
 
 // This function open the Git repository on given path and returns you the
@@ -49,13 +48,33 @@ func getRemoteURL(path string) (string, error) {
 
 // parse git@{host}:{project}.git and returns you
 // host and project.
+//
+// The parsing itself is naive and straightforward without
+// any reg.exp. I realised the reg.exp was confusing for me
+// and few more bug make it "complicated"
 func parseRemoteURL(URL string) (string, string) {
 	log.Debug("Parsing origin URL:%s", URL)
 
-	re := regexp.MustCompile(".*@(.*):(.*).git")
-	res := re.FindStringSubmatch(URL)
-	if len(res) < 3 {
+	// normalize URL - remove schema and user
+	normalizedURL := URL
+	schemeIndex := strings.Index(URL, "://")
+	if schemeIndex > 0 {
+		normalizedURL = URL[schemeIndex+len("://"):]
+	}
+
+	userIndex := strings.Index(normalizedURL, "@")
+	if userIndex > 0 {
+		normalizedURL = normalizedURL[userIndex+len("@"):]
+	}
+
+	// divide URL to host and project
+	hostIndex := strings.Index(normalizedURL, ":")
+	if hostIndex == 0 {
 		return "", ""
 	}
-	return res[1], res[2]
+
+	host := normalizedURL[0:hostIndex]
+	project := normalizedURL[hostIndex+len(":"):]
+
+	return host, project
 }

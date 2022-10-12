@@ -8,7 +8,7 @@ func Test_parseRemoteURL(t *testing.T) {
 		t.FailNow()
 	}
 
-	if project != "mygroup/myrepo.git" {
+	if project != "mygroup/myrepo" {
 		t.FailNow()
 	}
 
@@ -17,7 +17,7 @@ func Test_parseRemoteURL(t *testing.T) {
 		t.FailNow()
 	}
 
-	if project != "mygroup/myrepo.git" {
+	if project != "mygroup/myrepo" {
 		t.FailNow()
 	}
 
@@ -26,7 +26,17 @@ func Test_parseRemoteURL(t *testing.T) {
 		t.FailNow()
 	}
 
-	if project != "mygroup/myrepo.git" {
+	if project != "mygroup/myrepo" {
 		t.FailNow()
 	}
+
+	host, project = parseRemoteURL("git@somegitlab.com/mygroup/myrepo")
+	if host != "somegitlab.com" {
+		t.FailNow()
+	}
+
+	if project != "mygroup/myrepo" {
+		t.FailNow()
+	}
+
 }

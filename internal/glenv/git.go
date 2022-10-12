@@ -55,12 +55,14 @@ func getRemoteURL(path string) (string, error) {
 func parseRemoteURL(URL string) (string, string) {
 	log.Debug("Parsing origin URL:%s", URL)
 
-	// normalize URL - remove schema and user
+	// normalize URL - remove schema, user and ".git" suffix
 	normalizedURL := URL
 	schemeIndex := strings.Index(URL, "://")
 	if schemeIndex > 0 {
 		normalizedURL = URL[schemeIndex+len("://"):]
 	}
+
+	normalizedURL = strings.TrimSuffix(normalizedURL, ".git")
 
 	userIndex := strings.Index(normalizedURL, "@")
 	if userIndex > 0 {

@@ -69,12 +69,15 @@ func parseRemoteURL(URL string) (string, string) {
 
 	// divide URL to host and project
 	hostIndex := strings.Index(normalizedURL, ":")
-	if hostIndex == 0 {
-		return "", ""
+	if hostIndex < 0 {
+		hostIndex = strings.Index(normalizedURL, "/")
+		if hostIndex < 0 {
+			return "", ""
+		}
 	}
 
 	host := normalizedURL[0:hostIndex]
-	project := normalizedURL[hostIndex+len(":"):]
+	project := normalizedURL[hostIndex+1:]
 
 	return host, project
 }

@@ -1,3 +1,6 @@
+# disclaimer
+⚠️ This repository is no longer maintained, please use the fork at [sn3d/glenv](github.com/sn3d/glenv)
+
 # glenv
 ![version](https://shields.io/github/v/release/kiwicom/glenv)
 
